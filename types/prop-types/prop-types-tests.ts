@@ -207,3 +207,32 @@ type UndefaultizedPropsTest = {
     baz: boolean;
     bat: Exclude<ReactNode, undefined>;
 } extends UndefaultizedProps ? true : false;
+
+interface PartialTestProps {
+    foo: string;
+    bar?: boolean | null;
+}
+
+// $ExpectType Partial<{ foo: Validator<string>; bar?: Validator<boolean | null | undefined> | undefined; }>
+type PartialTestValidationMap = PropTypes.ValidationMap<PartialTestProps>;
+
+type PartialTestInferProps = PropTypes.InferProps<PartialTestValidationMap>;
+// $ExpectType true
+type PartialTestInferPropsMatch = PartialTestProps extends PartialTestInferProps ? true : false;
+// $ExpectType true
+type PartialTestInferPropsMatch2 = PartialTestInferProps extends PartialTestProps ? true : false;
+
+const partialTestPropTypes: PartialTestValidationMap = { bar: PropTypes.bool };
+type PartialTestPropTypesInferProps = PropTypes.InferProps<typeof partialTestPropTypes>;
+// $ExpectType true
+type PartialTestPropTypesInferPropsMatch = PartialTestProps extends PartialTestPropTypesInferProps ? true : false;
+// $ExpectType true
+type PartialTestPropTypesInferPropsMatch2 = PartialTestPropTypesInferProps extends PartialTestProps ? true : false;
+
+const partialTestPropTypesWithoutAnnotation = { bar: PropTypes.bool };
+// $ExpectType true
+type PartialTestPropTypesWithoutAnnotationMatchesMap = (typeof partialTestPropTypesWithoutAnnotation) extends PartialTestValidationMap ? true : false;
+
+type PartialTestPropTypesWithoutAnnotationInferProps = PropTypes.InferProps<typeof partialTestPropTypesWithoutAnnotation>;
+// $ExpectType true
+type PartialTestPropTypesWithoutAnnotationInferPropsMatch = PartialTestProps extends PartialTestPropTypesWithoutAnnotationInferProps ? true : false;
